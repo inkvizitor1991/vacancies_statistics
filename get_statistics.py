@@ -31,7 +31,7 @@ def predict_rub_salary_sj(vacancy):
 def get_vacancies_hh(pages, languages, api):
     url = 'https://api.hh.ru/vacancies'
     headers = {'X-Api-App-Id': api}
-    parsed_vacancies_hh = {}
+    parsed_vacancies = {}
     for language in languages:
         params = {
             'text': f'Программист {language}',
@@ -42,28 +42,28 @@ def get_vacancies_hh(pages, languages, api):
         response.raise_for_status()
         vacancies = response.json()
 
-        salary_all_vacancies = 0
-        quantity_vacancies = 0
+        vacancies_salary = 0
+        vacancies_quantity = 0
 
         for vacancy in vacancies['items']:
             salary = predict_rub_salary_hh(vacancy)
 
             if salary:
-                quantity_vacancies += 1
-                salary_all_vacancies += int(salary)
+                vacancies_quantity += 1
+                vacancies_salary += int(salary)
 
-        parsed_vacancies_hh[language] = {
+        parsed_vacancies[language] = {
             'vacancies_found': vacancies['found'],
-            'vacancies_processed': quantity_vacancies,
-            'average_salary': int(salary_all_vacancies / quantity_vacancies)
+            'vacancies_processed': vacancies_quantity,
+            'average_salary': int(vacancies_salary / vacancies_quantity)
         }
-    return parsed_vacancies_hh
+    return parsed_vacancies
 
 
 def get_vacancies_sj(pages, languages, api):
     url = 'https://api.superjob.ru/2.0/vacancies/'
     headers = {'X-Api-App-Id': api}
-    parsed_vacancies_sj = {}
+    parsed_vacancies = {}
 
     for language in languages:
         params = {
@@ -75,21 +75,21 @@ def get_vacancies_sj(pages, languages, api):
         response.raise_for_status()
         vacancies = response.json()
 
-        salary_all_vacancies = 0
-        quantity_vacancies = 0
+        vacancies_salary = 0
+        vacancies_quantity = 0
 
         for vacancy in vacancies['objects']:
             salary = predict_rub_salary_sj(vacancy)
             if salary:
-                quantity_vacancies += 1
-                salary_all_vacancies += int(salary)
+                vacancies_quantity += 1
+                vacancies_salary += int(salary)
 
-        parsed_vacancies_sj[language] = {
+        parsed_vacancies[language] = {
             'vacancies_found': vacancies['total'],
-            'vacancies_processed': quantity_vacancies,
-            'average_salary': int(salary_all_vacancies / quantity_vacancies)
+            'vacancies_processed': vacancies_quantity,
+            'average_salary': int(vacancies_salary / vacancies_quantity)
         }
-    return parsed_vacancies_sj
+    return parsed_vacancies
 
 
 if __name__ == '__main__':
