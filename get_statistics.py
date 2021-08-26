@@ -13,21 +13,19 @@ import requests
 
 def predict_rub_salary_hh(vacancy):
     payment = vacancy['salary']
-    if payment:
-        if payment['currency'] == 'RUR':
-            return predict_salary(
-                payment['from'],
-                payment['from']
-            )
+    if payment and payment['currency'] == 'RUR':
+        return predict_salary(
+            payment['from'],
+            payment['from']
+        )
 
 
 def predict_rub_salary_sj(vacancy):
-    if vacancy:
-        if vacancy['currency'] == 'rub':
-            return predict_salary(
-                vacancy['payment_from'],
-                vacancy['payment_to']
-            )
+    if vacancy and vacancy['currency'] == 'rub':
+        return predict_salary(
+            vacancy['payment_from'],
+            vacancy['payment_to']
+        )
 
 
 def get_vacancies_hh(pages, languages, api):
