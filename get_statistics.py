@@ -2,10 +2,13 @@ from __future__ import print_function
 
 import os
 
-import requests
 from counts_predict_salary import predict_salary
+
 from create_table import get_statistics
+
 from dotenv import load_dotenv
+
+import requests
 
 
 def predict_rub_salary_hh(vacancy):
