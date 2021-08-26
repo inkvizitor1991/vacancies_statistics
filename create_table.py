@@ -9,10 +9,10 @@ def get_statistics(parsed_vacancies, name):
             (language, parsed_vacancies[language]['vacancies_found'],
              parsed_vacancies[language]['vacancies_processed'],
              parsed_vacancies[language]['average_salary']))
-    main(tuple(statistics), name)
+    create_table(tuple(statistics), name)
 
 
-def main(statistics, name):
+def create_table(statistics, name):
     title = f'{name} Moscow'
     table_instance = AsciiTable(statistics, title)
     table_instance.justify_columns[2] = 'right'
