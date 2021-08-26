@@ -96,8 +96,8 @@ if __name__ == '__main__':
     load_dotenv()
     api = os.environ['USER_AGENT']
     pages = 100
-    title_sj = 'SuperJob'
-    title_hh = 'HeadHunter'
+    sj_title = 'SuperJob'
+    hh_title = 'HeadHunter'
 
     languages = [
         'TypeScript', 'Swift', 'Scala',
@@ -107,6 +107,6 @@ if __name__ == '__main__':
     parsed_vacancies_hh = get_vacancies_hh(pages, languages, api)
     parsed_vacancies_sj = get_vacancies_sj(pages, languages, api)
 
-    get_statistics(parsed_vacancies_hh, title_hh)
+    get_statistics(parsed_vacancies_hh, hh_title)
 
-    get_statistics(parsed_vacancies_sj, title_sj)
+    get_statistics(parsed_vacancies_sj, sj_title)
