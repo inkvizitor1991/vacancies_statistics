@@ -4,7 +4,7 @@ import os
 
 from counts_predict_salary import predict_salary
 
-from create_table import get_statistics
+from create_table import create_table
 
 from dotenv import load_dotenv
 
@@ -28,7 +28,7 @@ def predict_rub_salary_sj(vacancy):
         )
 
 
-def get_vacancies_hh(pages, languages, api):
+def get_vacancies_hh(HH_ALL_VACANCIES, HH_MOSCOW, pages, languages, api):
     url = 'https://api.hh.ru/vacancies'
     headers = {'X-Api-App-Id': api}
     parsed_vacancies = {}
@@ -36,7 +36,8 @@ def get_vacancies_hh(pages, languages, api):
         params = {
             'text': f'Программист {language}',
             'per_page': pages,
-            'area': '1',
+            'period': HH_ALL_VACANCIES,
+            'area': HH_MOSCOW,
         }
         response = requests.get(url, headers=headers, params=params)
         response.raise_for_status()
@@ -60,7 +61,7 @@ def get_vacancies_hh(pages, languages, api):
     return parsed_vacancies
 
 
-def get_vacancies_sj(pages, languages, api):
+def get_vacancies_sj(SJ_ALL_VACANCIES, SJ_MOSCOW, pages, languages, api):
     url = 'https://api.superjob.ru/2.0/vacancies/'
     headers = {'X-Api-App-Id': api}
     parsed_vacancies = {}
@@ -68,7 +69,8 @@ def get_vacancies_sj(pages, languages, api):
     for language in languages:
         params = {
             'count': pages,
-            'town': 4,
+            'town': SJ_MOSCOW,
+            'period': SJ_ALL_VACANCIES,
             'keywords': f'Программист {language}'
         }
         response = requests.get(url, headers=headers, params=params)
@@ -94,6 +96,12 @@ def get_vacancies_sj(pages, languages, api):
 
 if __name__ == '__main__':
     load_dotenv()
+
+    SJ_MOSCOW = 4
+    HH_MOSCOW = 1
+    SJ_ALL_VACANCIES = 0
+    HH_ALL_VACANCIES = 30
+
     api = os.environ['USER_AGENT']
     pages = 100
     sj_title = 'SuperJob'
@@ -104,9 +112,14 @@ if __name__ == '__main__':
         'Shell', 'Go', 'C', 'C++', 'Ruby',
         'JavaScript', 'Java', 'Python'
     ]
-    parsed_vacancies_hh = get_vacancies_hh(pages, languages, api)
-    parsed_vacancies_sj = get_vacancies_sj(pages, languages, api)
+    parsed_vacancies_hh = get_vacancies_hh(
+        HH_ALL_VACANCIES, HH_MOSCOW, pages, languages, api
+    )
+    parsed_vacancies_sj = get_vacancies_sj(
+        SJ_ALL_VACANCIES, SJ_MOSCOW, pages, languages, api
+    )
 
-    get_statistics(parsed_vacancies_hh, hh_title)
-
-    get_statistics(parsed_vacancies_sj, sj_title)
+    hh_table = create_table(parsed_vacancies_hh, hh_title)
+    sj_table = create_table(parsed_vacancies_sj, sj_title)
+    print(hh_table)
+    print(sj_table)
