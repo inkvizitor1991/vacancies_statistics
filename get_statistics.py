@@ -31,66 +31,68 @@ def predict_rub_salary_sj(vacancy):
 def get_vacancies_hh(HH_ALL_VACANCIES, HH_MOSCOW, pages, languages, api):
     url = 'https://api.hh.ru/vacancies'
     headers = {'X-Api-App-Id': api}
+
+    params = {
+        'text': f'Программист {language}',
+        'per_page': pages,
+        'period': HH_ALL_VACANCIES,
+        'area': HH_MOSCOW,
+    }
+    response = requests.get(url, headers=headers, params=params)
+    response.raise_for_status()
+    vacancies = response.json()
+    return vacancies
+
+
+def parse_vacancies_hh(vacancies, language):
     parsed_vacancies = {}
-    for language in languages:
-        params = {
-            'text': f'Программист {language}',
-            'per_page': pages,
-            'period': HH_ALL_VACANCIES,
-            'area': HH_MOSCOW,
-        }
-        response = requests.get(url, headers=headers, params=params)
-        response.raise_for_status()
-        vacancies = response.json()
+    vacancies_salary = 0
+    vacancies_quantity = 0
+    for vacancy in vacancies['items']:
+        salary = predict_rub_salary_hh(vacancy)
+        if salary:
+            vacancies_quantity += 1
+            vacancies_salary += int(salary)
 
-        vacancies_salary = 0
-        vacancies_quantity = 0
-
-        for vacancy in vacancies['items']:
-            salary = predict_rub_salary_hh(vacancy)
-
-            if salary:
-                vacancies_quantity += 1
-                vacancies_salary += int(salary)
-
-        parsed_vacancies[language] = {
-            'vacancies_found': vacancies['found'],
-            'vacancies_processed': vacancies_quantity,
-            'average_salary': int(vacancies_salary / vacancies_quantity)
-        }
+            parsed_vacancies[language] = {
+                'vacancies_found': vacancies['found'],
+                'vacancies_processed': vacancies_quantity,
+                'average_salary': int(vacancies_salary / vacancies_quantity)
+            }
     return parsed_vacancies
 
 
-def get_vacancies_sj(SJ_ALL_VACANCIES, SJ_MOSCOW, pages, languages, api):
+def get_vacancies_sj(SJ_ALL_VACANCIES, SJ_MOSCOW, pages, language, api):
     url = 'https://api.superjob.ru/2.0/vacancies/'
     headers = {'X-Api-App-Id': api}
+
+    params = {
+        'count': pages,
+        'town': SJ_MOSCOW,
+        'period': SJ_ALL_VACANCIES,
+        'keywords': f'Программист {language}'
+    }
+    response = requests.get(url, headers=headers, params=params)
+    response.raise_for_status()
+    vacancies = response.json()
+    return vacancies
+
+
+def parse_vacancies_sj(vacancies, language):
     parsed_vacancies = {}
+    vacancies_salary = 0
+    vacancies_quantity = 0
+    for vacancy in vacancies['objects']:
+        salary = predict_rub_salary_sj(vacancy)
+        if salary:
+            vacancies_quantity += 1
+            vacancies_salary += int(salary)
 
-    for language in languages:
-        params = {
-            'count': pages,
-            'town': SJ_MOSCOW,
-            'period': SJ_ALL_VACANCIES,
-            'keywords': f'Программист {language}'
-        }
-        response = requests.get(url, headers=headers, params=params)
-        response.raise_for_status()
-        vacancies = response.json()
-
-        vacancies_salary = 0
-        vacancies_quantity = 0
-
-        for vacancy in vacancies['objects']:
-            salary = predict_rub_salary_sj(vacancy)
-            if salary:
-                vacancies_quantity += 1
-                vacancies_salary += int(salary)
-
-        parsed_vacancies[language] = {
-            'vacancies_found': vacancies['total'],
-            'vacancies_processed': vacancies_quantity,
-            'average_salary': int(vacancies_salary / vacancies_quantity)
-        }
+            parsed_vacancies[language] = {
+                'vacancies_found': vacancies['total'],
+                'vacancies_processed': vacancies_quantity,
+                'average_salary': int(vacancies_salary / vacancies_quantity)
+            }
     return parsed_vacancies
 
 
@@ -112,14 +114,23 @@ if __name__ == '__main__':
         'Shell', 'Go', 'C', 'C++', 'Ruby',
         'JavaScript', 'Java', 'Python'
     ]
-    parsed_vacancies_hh = get_vacancies_hh(
-        HH_ALL_VACANCIES, HH_MOSCOW, pages, languages, api
-    )
-    parsed_vacancies_sj = get_vacancies_sj(
-        SJ_ALL_VACANCIES, SJ_MOSCOW, pages, languages, api
-    )
 
-    hh_table = create_table(parsed_vacancies_hh, hh_title)
-    sj_table = create_table(parsed_vacancies_sj, sj_title)
+    hh_statistics = []
+    sj_statistics = []
+    for language in languages:
+        hh_vacancies = get_vacancies_hh(
+            HH_ALL_VACANCIES, HH_MOSCOW, pages, language, api
+        )
+        hh_parsed_vacancies = parse_vacancies_hh(hh_vacancies, language)
+        hh_statistics.append(hh_parsed_vacancies)
+
+        sj_vacancies = get_vacancies_sj(
+            SJ_ALL_VACANCIES, SJ_MOSCOW, pages, language, api
+        )
+        sj_parsed_vacancies = parse_vacancies_sj(sj_vacancies, language)
+        sj_statistics.append(sj_parsed_vacancies)
+
+    hh_table = create_table(hh_statistics, hh_title)
+    sj_table = create_table(sj_statistics, sj_title)
     print(hh_table)
     print(sj_table)
