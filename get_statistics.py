@@ -1,14 +1,11 @@
-from __future__ import print_function
-
 import os
 
-from counts_predict_salary import predict_salary
-
-from create_table import create_table
+import requests
 
 from dotenv import load_dotenv
 
-import requests
+from counts_predict_salary import predict_salary
+from create_table import create_table
 
 
 def predict_rub_salary_hh(vacancy):
@@ -28,7 +25,7 @@ def predict_rub_salary_sj(vacancy):
         )
 
 
-def get_vacancies_hh(HH_ALL_VACANCIES, HH_MOSCOW, pages, languages, api):
+def get_vacancies_hh(HH_ALL_VACANCIES, HH_MOSCOW, pages, language, api):
     url = 'https://api.hh.ru/vacancies'
     headers = {'X-Api-App-Id': api}
 
