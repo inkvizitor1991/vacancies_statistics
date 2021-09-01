@@ -25,15 +25,17 @@ def predict_rub_salary_sj(vacancy):
         )
 
 
-def get_vacancies_hh(HH_ALL_VACANCIES, HH_MOSCOW, pages, language, api):
+def get_vacancies_hh(pages, language, api):
+    MOSCOW = 1
+    ALL_VACANCIES = 30
     url = 'https://api.hh.ru/vacancies'
     headers = {'X-Api-App-Id': api}
 
     params = {
         'text': f'Программист {language}',
         'per_page': pages,
-        'period': HH_ALL_VACANCIES,
-        'area': HH_MOSCOW,
+        'period': ALL_VACANCIES,
+        'area': MOSCOW,
     }
     response = requests.get(url, headers=headers, params=params)
     response.raise_for_status()
@@ -59,14 +61,16 @@ def parse_vacancies_hh(vacancies, language):
     return parsed_vacancies
 
 
-def get_vacancies_sj(SJ_ALL_VACANCIES, SJ_MOSCOW, pages, language, api):
+def get_vacancies_sj(pages, language, api):
+    MOSCOW = 4
+    ALL_VACANCIES = 0
     url = 'https://api.superjob.ru/2.0/vacancies/'
     headers = {'X-Api-App-Id': api}
 
     params = {
         'count': pages,
-        'town': SJ_MOSCOW,
-        'period': SJ_ALL_VACANCIES,
+        'town': MOSCOW,
+        'period': ALL_VACANCIES,
         'keywords': f'Программист {language}'
     }
     response = requests.get(url, headers=headers, params=params)
@@ -95,12 +99,6 @@ def parse_vacancies_sj(vacancies, language):
 
 if __name__ == '__main__':
     load_dotenv()
-
-    SJ_MOSCOW = 4
-    HH_MOSCOW = 1
-    SJ_ALL_VACANCIES = 0
-    HH_ALL_VACANCIES = 30
-
     api = os.environ['USER_AGENT']
     pages = 100
     sj_title = 'SuperJob'
@@ -115,15 +113,11 @@ if __name__ == '__main__':
     hh_statistics = []
     sj_statistics = []
     for language in languages:
-        hh_vacancies = get_vacancies_hh(
-            HH_ALL_VACANCIES, HH_MOSCOW, pages, language, api
-        )
+        hh_vacancies = get_vacancies_hh(pages, language, api)
         hh_parsed_vacancies = parse_vacancies_hh(hh_vacancies, language)
         hh_statistics.append(hh_parsed_vacancies)
 
-        sj_vacancies = get_vacancies_sj(
-            SJ_ALL_VACANCIES, SJ_MOSCOW, pages, language, api
-        )
+        sj_vacancies = get_vacancies_sj( pages, language, api)
         sj_parsed_vacancies = parse_vacancies_sj(sj_vacancies, language)
         sj_statistics.append(sj_parsed_vacancies)
 
