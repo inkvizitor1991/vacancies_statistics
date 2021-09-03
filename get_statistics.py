@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 
 from counts_predict_salary import predict_salary
 from create_table import create_table
+from collects_language_statistics import get_statistics
 
 
 def predict_rub_salary_hh(vacancy):
@@ -42,22 +43,16 @@ def get_vacancies_hh(vacancies_on_page, language):
     return vacancies
 
 
-def parse_vacancies_hh(vacancies, language):
-    parsed_vacancies = {}
+def parse_vacancies_hh(vacancies):
     vacancies_salary = 0
     vacancies_processed = 0
+    vacancies_found = vacancies['found']
     for vacancy in vacancies['items']:
         salary = predict_rub_salary_hh(vacancy)
         if salary:
             vacancies_processed += 1
             vacancies_salary += int(salary)
-
-            parsed_vacancies[language] = {
-                'vacancies_found': vacancies['found'],
-                'vacancies_processed': vacancies_processed,
-                'average_salary': int(vacancies_salary / vacancies_processed)
-            }
-    return parsed_vacancies
+    return vacancies_found, vacancies_processed, vacancies_salary
 
 
 def get_vacancies_sj(vacancies_on_page, language, api):
@@ -78,22 +73,16 @@ def get_vacancies_sj(vacancies_on_page, language, api):
     return vacancies
 
 
-def parse_vacancies_sj(vacancies, language):
-    parsed_vacancies = {}
+def parse_vacancies_sj(vacancies):
     vacancies_salary = 0
     vacancies_processed = 0
+    vacancies_found = vacancies['total']
     for vacancy in vacancies['objects']:
         salary = predict_rub_salary_sj(vacancy)
         if salary:
             vacancies_processed += 1
             vacancies_salary += int(salary)
-
-            parsed_vacancies[language] = {
-                'vacancies_found': vacancies['total'],
-                'vacancies_processed': vacancies_processed,
-                'average_salary': int(vacancies_salary / vacancies_processed)
-            }
-    return parsed_vacancies
+    return vacancies_found, vacancies_processed, vacancies_salary
 
 
 if __name__ == '__main__':
@@ -109,16 +98,28 @@ if __name__ == '__main__':
         'JavaScript', 'Java', 'Python'
     ]
 
-    hh_statistics = []
-    sj_statistics = []
+    hh_statistics = {}
+    sj_statistics = {}
     for language in languages:
         hh_vacancies = get_vacancies_hh(vacancies_on_page, language)
-        hh_parsed_vacancies = parse_vacancies_hh(hh_vacancies, language)
-        hh_statistics.append(hh_parsed_vacancies)
+        vacancies_found, vacancies_processed, vacancies_salary = parse_vacancies_hh(
+            hh_vacancies
+        )
+        hh_language_statistics = get_statistics(
+            language, vacancies_found,
+            vacancies_processed, vacancies_salary
+        )
+        hh_statistics.update(hh_language_statistics)
 
-        sj_vacancies = get_vacancies_sj( vacancies_on_page, language, api)
-        sj_parsed_vacancies = parse_vacancies_sj(sj_vacancies, language)
-        sj_statistics.append(sj_parsed_vacancies)
+        sj_vacancies = get_vacancies_sj(vacancies_on_page, language, api)
+        vacancies_found, vacancies_processed, vacancies_salary = parse_vacancies_sj(
+            sj_vacancies
+        )
+        sj_language_statistics = get_statistics(
+            language, vacancies_found,
+            vacancies_processed, vacancies_salary)
+        sj_statistics.update(sj_language_statistics
+                             )
 
     hh_table = create_table(hh_statistics, hh_title)
     sj_table = create_table(sj_statistics, sj_title)

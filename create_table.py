@@ -10,7 +10,7 @@ def create_table(statistics, name):
     for language, language_statistics in statistics.items():
         vacancies_found, vacancies_processed, average_salary = language_statistics.values()
         table_rows.append((language, vacancies_found,
-                                  vacancies_processed, average_salary))
+                           vacancies_processed, average_salary))
 
     title = f'{name} Moscow'
     table_instance = AsciiTable(table_rows, title)
