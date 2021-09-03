@@ -25,11 +25,10 @@ def predict_rub_salary_sj(vacancy):
         )
 
 
-def get_vacancies_hh(pages, language, api):
+def get_vacancies_hh(pages, language):
     MOSCOW = 1
     ALL_VACANCIES = 30
     url = 'https://api.hh.ru/vacancies'
-    headers = {'X-Api-App-Id': api}
 
     params = {
         'text': f'Программист {language}',
@@ -37,7 +36,7 @@ def get_vacancies_hh(pages, language, api):
         'period': ALL_VACANCIES,
         'area': MOSCOW,
     }
-    response = requests.get(url, headers=headers, params=params)
+    response = requests.get(url, params=params)
     response.raise_for_status()
     vacancies = response.json()
     return vacancies
@@ -113,7 +112,7 @@ if __name__ == '__main__':
     hh_statistics = []
     sj_statistics = []
     for language in languages:
-        hh_vacancies = get_vacancies_hh(pages, language, api)
+        hh_vacancies = get_vacancies_hh(pages, language)
         hh_parsed_vacancies = parse_vacancies_hh(hh_vacancies, language)
         hh_statistics.append(hh_parsed_vacancies)
 
