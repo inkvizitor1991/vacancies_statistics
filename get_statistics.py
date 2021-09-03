@@ -26,15 +26,15 @@ def predict_rub_salary_sj(vacancy):
 
 
 def get_vacancies_hh(pages, language):
-    MOSCOW = 1
-    ALL_VACANCIES = 30
+    moscow = 1
+    all_vacancies = 30
     url = 'https://api.hh.ru/vacancies'
 
     params = {
         'text': f'Программист {language}',
         'per_page': pages,
-        'period': ALL_VACANCIES,
-        'area': MOSCOW,
+        'period': all_vacancies,
+        'area': moscow,
     }
     response = requests.get(url, params=params)
     response.raise_for_status()
@@ -61,15 +61,15 @@ def parse_vacancies_hh(vacancies, language):
 
 
 def get_vacancies_sj(pages, language, api):
-    MOSCOW = 4
-    ALL_VACANCIES = 0
+    moscow = 4
+    all_vacancies = 0
     url = 'https://api.superjob.ru/2.0/vacancies/'
     headers = {'X-Api-App-Id': api}
 
     params = {
         'count': pages,
-        'town': MOSCOW,
-        'period': ALL_VACANCIES,
+        'town': moscow,
+        'period': all_vacancies,
         'keywords': f'Программист {language}'
     }
     response = requests.get(url, headers=headers, params=params)
