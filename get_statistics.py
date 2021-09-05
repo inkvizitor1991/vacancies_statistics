@@ -14,7 +14,7 @@ def predict_rub_salary_hh(vacancy):
     if payment and payment['currency'] == 'RUR':
         return predict_salary(
             payment['from'],
-            payment['from']
+            payment['to']
         )
 
 
