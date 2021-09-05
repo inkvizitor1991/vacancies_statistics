@@ -103,7 +103,7 @@ def parse_vacancies_sj(language_vacancies):
 
 if __name__ == '__main__':
     load_dotenv()
-    api = os.environ['USER_AGENT']
+    api = os.environ['SUPERJOB_TOKEN']
     sj_title = 'SuperJob'
     hh_title = 'HeadHunter'
 
