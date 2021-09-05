@@ -30,11 +30,11 @@ def get_vacancies_hh(language):
     moscow = 1
     all_vacancies_period = 30
     vacancies_on_page = 50
-    pages = 40
     language_vacancies = []
     url = 'https://api.hh.ru/vacancies'
-
-    for page in range(pages):
+    pages_number = 40
+    page = 0
+    while page < pages_number:
         params = {
             'page': page,
             'text': f'Программист {language}',
@@ -46,6 +46,8 @@ def get_vacancies_hh(language):
         response.raise_for_status()
         vacancies = response.json()
         language_vacancies.append(vacancies)
+        pages_number = response.json()['pages']
+        page += 1
     return language_vacancies
 
 
@@ -66,15 +68,15 @@ def parse_vacancies_hh(language_vacancies):
 def get_vacancies_sj(language, api):
     moscow = 4
     vacancies_on_page = 100
-    pages = 5
     all_vacancies_period = 0
-    url = 'https://api.superjob.ru/2.0/vacancies/'
     language_vacancies = []
-    for page in range(pages):
+    url = 'https://api.superjob.ru/2.0/vacancies/'
+    pages_number = 5
+    page = 0
+    while page < pages_number:
         headers = {'X-Api-App-Id': api}
-
         params = {
-            'page':page,
+            'page': page,
             'count': vacancies_on_page,
             'town': moscow,
             'period': all_vacancies_period,
@@ -84,6 +86,8 @@ def get_vacancies_sj(language, api):
         response.raise_for_status()
         vacancies = response.json()
         language_vacancies.append(vacancies)
+        pages_number = response.json()['more']
+        page += 1
     return language_vacancies
 
 
