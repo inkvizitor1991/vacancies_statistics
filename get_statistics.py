@@ -127,7 +127,7 @@ if __name__ == '__main__':
         hh_statistics.update(hh_language_statistics)
 
         sj_language_vacancies, vacancies_found = get_vacancies_sj(
-            language,api
+            language, api
         )
         vacancies_processed, vacancies_salary = parse_vacancies_sj(
             sj_language_vacancies
