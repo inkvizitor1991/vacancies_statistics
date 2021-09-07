@@ -46,7 +46,7 @@ def get_vacancies_hh(language):
         response.raise_for_status()
         vacancies = response.json()
         language_vacancies.extend(vacancies['items'])
-        pages_number = response.json()['pages']
+        pages_number = vacancies['pages']
         page += 1
     vacancies_found = vacancies['found']
     return language_vacancies, vacancies_found
@@ -84,7 +84,7 @@ def get_vacancies_sj(language, api):
         response.raise_for_status()
         vacancies = response.json()
         language_vacancies.extend(vacancies['objects'])
-        pages_number = response.json()['more']
+        pages_number = vacancies['more']
         page += 1
     vacancies_found = vacancies['total']
     return language_vacancies, vacancies_found
