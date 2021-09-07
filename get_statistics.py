@@ -71,7 +71,7 @@ def get_vacancies_sj(language, api):
     url = 'https://api.superjob.ru/2.0/vacancies/'
     pages_number = 5
     page = 0
-    while page < pages_number:
+    while pages_number:
         headers = {'X-Api-App-Id': api}
         params = {
             'page': page,
