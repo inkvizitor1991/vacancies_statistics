@@ -63,7 +63,7 @@ def parse_vacancies_hh(language_vacancies):
     return vacancies_processed, vacancies_salary
 
 
-def get_vacancies_sj(language, api):
+def get_vacancies_sj(language, superjob_token):
     moscow = 4
     vacancies_on_page = 100
     all_vacancies_period = 0
@@ -72,7 +72,7 @@ def get_vacancies_sj(language, api):
     pages_number = 5
     page = 0
     while pages_number:
-        headers = {'X-Api-App-Id': api}
+        headers = {'X-Api-App-Id': superjob_token}
         params = {
             'page': page,
             'count': vacancies_on_page,
@@ -103,7 +103,7 @@ def parse_vacancies_sj(language_vacancies):
 
 if __name__ == '__main__':
     load_dotenv()
-    api = os.environ['SUPERJOB_API']
+    superjob_token = os.environ['SUPERJOB_TOKEN']
     sj_title = 'SuperJob'
     hh_title = 'HeadHunter'
 
@@ -127,7 +127,7 @@ if __name__ == '__main__':
         hh_statistics.update(hh_language_statistics)
 
         sj_language_vacancies, vacancies_found = get_vacancies_sj(
-            language, api
+            language, superjob_token
         )
         vacancies_processed, vacancies_salary = parse_vacancies_sj(
             sj_language_vacancies
