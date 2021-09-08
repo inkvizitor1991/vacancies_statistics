@@ -3,7 +3,7 @@ def get_statistics(language, vacancies_found,
     if vacancies_processed:
         average_salary = int(vacancies_salary / vacancies_processed)
     else:
-        average_salary = 'Вакансий нет'
+        average_salary = 0
     language_statistics = {}
     language_statistics[language] = {
         'vacancies_found': vacancies_found,
